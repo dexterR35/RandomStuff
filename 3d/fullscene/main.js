@@ -5,7 +5,7 @@ let mouse = new THREE.Vector2(); // Vector to store normalized mouse coordinates
 let isAnimating = false; // check if animation is currently running
 let controls; // Orbit controls for camera
 let orbitEnabled = false; // check if orbit controls are enabled
-const maxCount = 2; // Maximum spins
+const maxCount = 3; // Maximum spins
 let clickCount = maxCount; // Counter for remaining interactions
 
 // Configuration variables for animation durations and rotations
@@ -187,7 +187,7 @@ function decrementCounter() {
 
 function updateCountDisplay() {
     // Update the displayed count of remaining clicks
-    document.getElementById('countDisplay').innerText = `Click Remaining: ${clickCount}/${maxCount}`;
+    document.getElementById('countDisplay').innerText = `Click Remaining: ${clickCount}/${maxCount} (max-unlimited)`;
 }
 
 function animateLeverAndWheels() {

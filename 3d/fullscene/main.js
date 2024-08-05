@@ -24,7 +24,7 @@ function init() {
     scene = new THREE.Scene();
     // Set up the camera with perspective projection
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 4.5); // Set camera position
+    camera.position.set(0, 0, 5); // Set camera position
     // Set up the renderer with antialiasing
     renderer = new THREE.WebGLRenderer({
         antialias: true

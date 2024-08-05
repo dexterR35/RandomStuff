@@ -5,7 +5,7 @@ let mouse = new THREE.Vector2(); // Vector to store normalized mouse coordinates
 let isAnimating = false; // check if animation is currently running
 let controls; // Orbit controls for camera
 let orbitEnabled = false; // check if orbit controls are enabled
-const maxCount = 3; // Maximum spins
+const maxCount = 2; // Maximum spins
 let clickCount = maxCount; // Counter for remaining interactions
 
 // Configuration variables for animation durations and rotations
@@ -40,7 +40,7 @@ function init() {
 
     // Load the GLTF model
     const loader = new THREE.GLTFLoader();
-    loader.load('./roata_good_best.glb', function (gltf) {
+    loader.load('./roata-new_color.glb', function (gltf) {
         const model = gltf.scene;
         scene.add(model); // Add the loaded model to the scene
         for (let i = 1; i <= 5; i++) {
@@ -51,16 +51,17 @@ function init() {
                 // Set a random initial rotation for each wheel
                 wheel.rotation.x = getRandomCenteredRotation();
                 // Traverse children of the wheel to find boxes and set colors
-                wheel.children.forEach((child, index) => {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: new THREE.Color(`hsl(${index * 100}, 100%, 50%)`)
-                        });
-                    }
-                });
+                console.log(wheels);
+                // wheel.children.forEach((child, index) => {
+                //     if (child.isMesh) {
+                //         child.material = new THREE.MeshStandardMaterial({
+                //             color: new THREE.Color(`hsl(${index * 100}, 100%, 50%)`)
+                //         });
+                //     }
+                // });
             }
         }
-        lever = gltf.scene.getObjectByName('maneta');
+        lever = gltf.scene.getObjectByName('lever');
 
         if (!lever) {
             console.error('Lever object not found in the GLTF model.');
@@ -134,7 +135,7 @@ function handleAction() {
         targetIndexes = generateRandomTargetIndexes();
         console.log(targetIndexes, "targetIndexesRandom");
     } else {
-        targetIndexes = [2, 2, 2, 2, 2]; // Winning index on the last click
+        targetIndexes = [0, 0, 0, 0, 0]; // Winning index on the last click
         console.log(targetIndexes, "targetIndexes");
     }
     animateLeverAndWheels();
@@ -162,7 +163,7 @@ function onDocumentMouseClick(event) {
     raycaster.setFromCamera(mouse, camera); // Update the raycaster with camera and mouse position
     const intersects = raycaster.intersectObjects(scene.children, true); // Get objects intersected by the ray
 
-    if (intersects.length > 0 && intersects[0].object.name === 'maneta') {
+    if (intersects.length > 0 && intersects[0].object.name === 'lever') {
         // If the lever is clicked, handle the action
         console.log('Lever clicked');
         handleAction();

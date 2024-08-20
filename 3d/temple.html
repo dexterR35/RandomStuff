@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLTF Loader</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Include three.js and GLTFLoader as traditional script files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/loaders/FontLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/geometries/TextGeometry.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+
+
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 1); // Soft white light
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(10, 10, -2.5);
+        scene.add(directionalLight);
+
+        // GLTF Loader
+        const loader = new THREE.GLTFLoader();
+        let loadedModel;
+        loader.load(
+            './testt.gltf',  // Ensure this path is correct
+            function (gltf) {
+                loadedModel = gltf.scene;
+                scene.add(loadedModel);
+                animate();
+            },
+            undefined,
+            function (error) {
+                console.error('An error happened:', error);
+            }
+        );
+
+        // Set initial camera position
+        camera.position.set(0, 50, 200);
+
+        // Orbit Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;  // Enable damping (inertia)
+        controls.dampingFactor = 0.05;  // Set damping factor for smooth movement
+        controls.maxPolarAngle = Math.PI / 2;  // Limit vertical rotation
+        controls.minDistance = 50;  // Set min zoom distance
+        controls.maxDistance = 300;  // Set max zoom distance
+
+        // Raycaster for detecting clicks on objects
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseClick(event) {
+    // Convert mouse position to normalized device coordinates (-1 to +1) for both components
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Update the raycaster with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Calculate objects intersecting the ray
+    const intersects = raycaster.intersectObjects(scene.children, true);
+
+    if (intersects.length > 0) {
+        const intersectedPoint = intersects[0].point; // Exact point on the object where the click occurred
+        const intersectedObject = intersects[0].object;
+
+        // Calculate the direction vector from the camera to the intersected point
+        const direction = new THREE.Vector3().subVectors(camera.position, intersectedPoint).normalize();
+
+        // Calculate the new camera position based on the direction vector
+        const distance = 30; // Set the desired distance from the clicked point
+        const targetPosition = intersectedPoint.clone().add(direction.multiplyScalar(distance));
+
+        // Use gsap to animate the camera movement
+        gsap.to(camera.position, {
+            duration: 1.5,
+            x: targetPosition.x,
+            y: targetPosition.y,
+            z: targetPosition.z,
+            onUpdate: function() {
+                camera.lookAt(intersectedPoint); // Ensure the camera looks at the clicked point
+            },
+            onComplete: function() {
+                camera.lookAt(intersectedPoint); // Final lookAt to the clicked point
+            }
+        });
+    } else {
+        console.log('No objects intersected');
+    }
+}
+
+
+
+        window.addEventListener('click', onMouseClick, false);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();  // Update controls for damping to work
+            renderer.render(scene, camera);
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        // Start the render loop
+        animate();
+    </script>
+</body>
+</html>

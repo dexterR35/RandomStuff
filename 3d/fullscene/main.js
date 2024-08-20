@@ -7,13 +7,13 @@ let controls; // Orbit controls for camera
 let orbitEnabled = false; // check if orbit controls are enabled
 const maxCount = 3; // Maximum spins
 let clickCount = maxCount; // Counter for remaining interactions
-
+let initialCameraPosition, initialCameraQuaternion;
 // Configuration variables for animation durations and rotations
 const config = {
     leverDuration: 400, // 0.4 seconds for lever animation
     wheelDuration: 1200, // 1.6 seconds for wheel rotation
     leverReturnDuration: 300, // 0.3 seconds for lever return animation
-    delayBetweenWheels: 250, // 0.25 seconds delay for each wheel
+    delayBetweenWheels: 150, // 0.25 seconds delay for each wheel
     totalWheelRotation: 4 * Math.PI // 2 * Math.PI (720deg) for wheel rotation
 };
 
@@ -24,7 +24,11 @@ function init() {
     scene = new THREE.Scene();
     // Set up the camera with perspective projection
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 5); // Set camera position
+    camera.position.set(-10, -10, 30); // Start with the camera far away
+    // Store the initial camera position and orientation
+    initialCameraPosition = camera.position.clone();
+    initialCameraQuaternion = camera.quaternion.clone();
+    
     // Set up the renderer with antialiasing
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -50,24 +54,12 @@ function init() {
                 wheels.push(wheel);
                 // Set a random initial rotation for each wheel
                 wheel.rotation.x = getRandomCenteredRotation();
-                // Traverse children of the wheel to find boxes and set colors
-                console.log(wheels);
-                // wheel.children.forEach((child, index) => {
-                //     if (child.isMesh) {
-                //         child.material = new THREE.MeshStandardMaterial({
-                //             color: new THREE.Color(`hsl(${index * 100}, 100%, 50%)`)
-                //         });
-                //     }
-                // });
             }
         }
         lever = gltf.scene.getObjectByName('lever');
 
         if (!lever) {
             console.error('Lever object not found in the GLTF model.');
-        } else {
-            lever.rotation.x = Math.PI / 4; // Set initial rotation of the lever
-            document.addEventListener('click', onDocumentMouseClick, false); // Add event listener for mouse clicks
         }
     }, undefined, function (error) {
         console.error('An error occurred while loading the GLTF model', error);
@@ -76,18 +68,52 @@ function init() {
     // Handle window resize
     window.addEventListener('resize', onWindowResize, false);
 
-    // Add event listeners for the buttons
+    // Add event listeners for the buttons, initially disabled
     document.getElementById('toggleButton').addEventListener('click', toggleOrbitControls);
     document.getElementById('rotateButton').addEventListener('click', onRotateButtonClick);
+    disableInteractions(); // Disable all interactions initially
 
     updateCountDisplay(); // Initialize the count display
+    showStartButton(); // Show the start button when the scene initializes
+}
+
+function showStartButton() {
+    // Create the start button element
+    const startButton = document.createElement('button');
+    startButton.id = 'startButton';
+    startButton.innerText = 'Start Game';
+    document.body.appendChild(startButton);
+    // Add click event listener to the start button
+    startButton.addEventListener('click', function() {
+        document.body.removeChild(startButton); // Remove the button after clicking
+        moveToDefaultCameraPosition(); // Move the camera to the default position
+        enableInteractions(); // Enable all interactions after the game starts
+    });
+}
+
+function moveToDefaultCameraPosition() {
+    const start = performance.now(); // Get the start time
+    const initialPosition = { x: camera.position.x, y: camera.position.y, z: camera.position.z }; // Store the initial position
+    const targetPosition = { x: 0, y: 0, z: 5 }; // Target camera position
+    
+    function animateCamera(time) {
+        const elapsed = time - start; // Calculate elapsed time
+        const progress = Math.min(elapsed / 1000, 1); // Progress for 1 second animation
+        camera.position.x = initialPosition.x + (targetPosition.x - initialPosition.x) * easeInOutQuad(progress); // Animate the x position
+        camera.position.y = initialPosition.y + (targetPosition.y - initialPosition.y) * easeInOutQuad(progress); // Animate the y position
+        camera.position.z = initialPosition.z + (targetPosition.z - initialPosition.z) * easeInOutQuad(progress); // Animate the z position
+
+        if (progress < 1) {
+            requestAnimationFrame(animateCamera); // Continue the animation
+        }
+    }
+
+    requestAnimationFrame(animateCamera); // Start the camera animation
 }
 
 function getRandomCenteredRotation() {
-    // Get a random number between 0 and 7
     const randomInt = Math.floor(Math.random() * 8);
-    // Multiply by π/4 to get a centered rotation
-    return randomInt * (Math.PI / 2);
+    return randomInt * (Math.PI / 4);
 }
 
 function generateRandomTargetIndexes() {
@@ -104,7 +130,6 @@ function animateWheels() {
     const start = performance.now(); // Get the start time
     function animate(time) {
         const elapsed = time - start; // Calculate elapsed time
-        // console.log(elapsed,'Start Wheel elapsed')
         wheels.forEach((wheel, index) => {
             if (wheel && elapsed >= config.delayBetweenWheels * index) {
                 // Animate each wheel after a delay
@@ -113,7 +138,6 @@ function animateWheels() {
                 const initialRotation = wheel.rotation.x; // Get current rotation
                 const targetRotation = (targetIndexes[index] * (Math.PI / 4)) + (wheelProgress * config.totalWheelRotation);
                 wheel.rotation.x = initialRotation + (targetRotation - initialRotation); // Apply easing and rotation
-                // wheel.rotation.x = initialRotation + (targetRotation - initialRotation) * easeInOutQuad(wheelProgress); // Apply easing and rotation
             }
         });
 
@@ -272,22 +296,35 @@ function toggleOrbitControls() {
         console.log('Orbit controls disabled');
     } else {
         // Enable orbit controls
+        // Reset camera to its initial position and orientation before enabling controls
+        camera.position.copy(initialCameraPosition);
+        camera.quaternion.copy(initialCameraQuaternion);
+        
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true; // Enable damping for smooth control
         controls.dampingFactor = 0.25; // Set damping factor
         controls.screenSpacePanning = false; // Disable screen space panning
         controls.maxPolarAngle = Math.PI / 2; // Limit vertical rotation
         document.getElementById('toggleButton').innerText = 'Disable Orbit Controls';
+
+        // Log the camera's position after enabling orbit controls
         console.log('Orbit controls enabled');
+        console.log('Camera Position:', camera.position);
     }
     orbitEnabled = !orbitEnabled; // Toggle orbit controls flag
 }
 
 function disableInteractions() {
-    // Disable all interactions once the click count reaches zero
+    // Disable all interactions until the game is started
     document.getElementById('rotateButton').disabled = true; // Disable rotate button
-    document.removeEventListener('click', onDocumentMouseClick, false); // Remove mouse click listener
+    document.removeEventListener('click', onDocumentMouseClick, false); // Remove mouse click listener if any
     if (controls) controls.dispose(); // Dispose orbit controls if enabled
+}
+
+function enableInteractions() {
+    // Enable all interactions when the game is started
+    document.getElementById('rotateButton').disabled = false; // Enable rotate button
+    document.addEventListener('click', onDocumentMouseClick, false); // Add mouse click listener for lever
 }
 
 function showWinningMessage() {

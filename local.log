@@ -2,7 +2,7 @@
 
 (Not all processes could be identified, non-owned process info
  will not be shown, you would have to be root to see it all.)
-Mon Aug 05 2024 12:36:00:594 GMT+0300 (EEST) -- [ERROR] Another instance of BrowserStack Binary is running with on your system with PID: 300931
-Mon Aug 05 2024 12:36:00:602 GMT+0300 (EEST) -- [ERROR] Please close it and try again
-Mon Aug 05 2024 12:36:00:602 GMT+0300 (EEST) -- [ERROR] SYS_CONFLICT:1001 https://browserstack.com/docs/local-testing/binary/errors/1001
-Mon Aug 05 2024 12:36:00:603 GMT+0300 (EEST) -- You can learn more about BrowserStack Binary flags by running ./BrowserStackLocal --help
+Tue Aug 20 2024 12:27:53:421 GMT+0300 (EEST) -- [ERROR] Another instance of BrowserStack Binary is running with on your system with PID: 51686
+Tue Aug 20 2024 12:27:53:422 GMT+0300 (EEST) -- [ERROR] Please close it and try again
+Tue Aug 20 2024 12:27:53:422 GMT+0300 (EEST) -- [ERROR] SYS_CONFLICT:1001 https://browserstack.com/docs/local-testing/binary/errors/1001
+Tue Aug 20 2024 12:27:53:422 GMT+0300 (EEST) -- You can learn more about BrowserStack Binary flags by running ./BrowserStackLocal --help

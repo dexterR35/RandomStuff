@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetBet </title>
+    <style type="text/css">
+ 
+        {{styles}}
+      </style>
+</head>
+
+<body {{attributes}} style="margin:0;padding:0;font-family:'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', 'Helvetica Neue', 'Arial', 'sans-serif';background-color:#ffff;">
+
+    <table role="presentation" width="100%" style="border-collapse:collapse;background:radial-gradient(circle, hsla(225, 49%, 21%, 1) 0%, hsla(224, 92%, 5%, 1) 100%);">
+        <tr>
+            <td align="center" style="padding:20px;">
+                <img src="https://img.netbet.co.uk/poker/marketing_images/NetBet_logo.png" alt="NetBet" style="height:45px;">
+            </td>
+        </tr>
+    </table>
+    <table role="presentation" width="100%" style="border-collapse:collapse;">
+        <tr>
+            <td style="padding:20px;">
+                <div style="font-size:14px;line-height:1.5;color:#444444;padding:20px;background-color:#ffffff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                    {{content}}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:20px;">
+                <div style="font-size:14px;line-height:1.5;color:#444444;padding:20px;background-color:#ffffff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                    {{quoted_content}}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table role="presentation" width="100%" style="border-collapse:collapse;background:radial-gradient(circle, hsla(225, 49%, 21%, 1) 0%, hsla(224, 92%, 5%, 1) 100%);font-size:12px;color:#a0a0a0;">
+        <tr>
+            <td align="center">
+                <img src="https://img.netbet.co.uk/poker/marketing_images/NetBet_logo.png" alt="NetBet" style="height:60px;">
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding:10px;">
+                <a href="#" style="color:#a0a0a0;text-decoration:none;margin:0 5px;">Contact Us</a> |
+                <a href="#" style="color:#a0a0a0;text-decoration:none;margin:0 5px;">Private policy</a> |
+                <a href="#" style="color:#a0a0a0;text-decoration:none;margin:0 5px;">Subscribe</a>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding:10px;">
+                <a href="#"><img src="https://img.netbet.co.uk/poker/marketing_images/twitter-icon.png" alt="Twitter" style="width:24px;margin:0 10px;"></a>
+                <a href="#"><img src="https://img.netbet.co.uk/poker/marketing_images/twitter-icon.png" alt="Twitter" style="width:24px;margin:0 10px;"></a>
+                <a href="#"><img src="https://img.netbet.co.uk/poker/marketing_images/instagram-icon.png" alt="Instagram" style="width:24px;margin:0 10px;"></a>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding:10px;font-size:11px;">
+                @NetBet 2024
+            </td>
+        </tr>
+    </table>
+
+    <!-- JavaScript to display the language -->
+    <script>
+        // Get the lang attribute from the html tag
+        var lang = document.documentElement.lang;
+        var langDiv = document.createElement('div');
+        langDiv.style.textAlign = 'center';
+            langDiv.style.padding = '10px';
+            langDiv.style.backgroundColor = '#f0f0f0';
+            langDiv.style.borderTop = '1px solid #ddd';
+
+        if (lang === 'en-GB' || lang === 'ro' || lang === 'en-gb') {
+            langDiv.innerText = 'Language: ' + lang.toUpperCase();
+        } else {
+            langDiv.innerText = 'no lang'  + lang.toUpperCase();
+        }
+        document.body.insertBefore(langDiv, document.body.firstChild);
+    </script>
+
+</body>
+
+</html>
